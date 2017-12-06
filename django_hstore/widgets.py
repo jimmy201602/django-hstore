@@ -41,11 +41,18 @@ class BaseAdminHStoreWidget(AdminTextareaWidget):
         html = super(BaseAdminHStoreWidget, self).render(name, value, attrs)
 
         # prepare template context
-        template_context = Context({
-            'field_name': name,
-            'STATIC_URL': settings.STATIC_URL,
-            'use_svg': django.VERSION >= (1, 9),  # use svg icons if django >= 1.9
-        })
+        if django.VERSION < (1.11):
+            template_context = Context({
+                'field_name': name,
+                'STATIC_URL': settings.STATIC_URL,
+                'use_svg': django.VERSION >= (1, 9),  # use svg icons if django >= 1.9
+            })
+        else:
+            template_context = {
+                'field_name': name,
+                'STATIC_URL': settings.STATIC_URL,
+                'use_svg': django.VERSION >= (1, 9),  # use svg icons if django >= 1.9
+            }
         # get template object
         template = get_template('hstore_%s_widget.html' % self.admin_style)
         # render additional html

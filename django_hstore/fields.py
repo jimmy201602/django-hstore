@@ -63,7 +63,7 @@ class HStoreField(models.Field):
         return self._get_val_from_obj(obj)
 
     def db_type(self, connection=None):
-        return 'hstore'
+        return 'json'
 
     def south_field_triple(self):  # pragma no cover
         from south.modelsinspector import introspector
@@ -73,16 +73,34 @@ class HStoreField(models.Field):
 
 
 if django.VERSION >= (1, 7):
-    from .lookups import (HStoreGreaterThan, HStoreGreaterThanOrEqual, HStoreLessThan,
-                          HStoreLessThanOrEqual, HStoreContains, HStoreIContains, HStoreIsNull)
+    #from .lookups import (HStoreGreaterThan, HStoreGreaterThanOrEqual, HStoreLessThan,
+                          #HStoreLessThanOrEqual, HStoreContains, HStoreIContains, HStoreIsNull)
 
-    HStoreField.register_lookup(HStoreGreaterThan)
-    HStoreField.register_lookup(HStoreGreaterThanOrEqual)
-    HStoreField.register_lookup(HStoreLessThan)
-    HStoreField.register_lookup(HStoreLessThanOrEqual)
-    HStoreField.register_lookup(HStoreContains)
-    HStoreField.register_lookup(HStoreIContains)
-    HStoreField.register_lookup(HStoreIsNull)
+    #HStoreField.register_lookup(HStoreGreaterThan)
+    #HStoreField.register_lookup(HStoreGreaterThanOrEqual)
+    #HStoreField.register_lookup(HStoreLessThan)
+    #HStoreField.register_lookup(HStoreLessThanOrEqual)
+    #HStoreField.register_lookup(HStoreContains)
+    #HStoreField.register_lookup(HStoreIContains)
+    #HStoreField.register_lookup(HStoreIsNull)
+
+    #Bellow is some json query function 
+    from .lookups import (JSONContainedBy, JSONContains, JSONExact,
+                          JSONGreaterThan, JSONGreaterThanOrEqual, JSONHasAnyKeys, JSONHasKey,
+                          JSONHasKeys, JSONLength, JSONLessThan, JSONLessThanOrEqual
+                          )
+
+    HStoreField.register_lookup(JSONContainedBy)
+    HStoreField.register_lookup(JSONContains)
+    HStoreField.register_lookup(JSONExact)
+    HStoreField.register_lookup(JSONGreaterThan)
+    HStoreField.register_lookup(JSONGreaterThanOrEqual)
+    HStoreField.register_lookup(JSONHasAnyKeys)
+    HStoreField.register_lookup(JSONHasKey)
+    HStoreField.register_lookup(JSONHasKeys)
+    HStoreField.register_lookup(JSONLength)
+    HStoreField.register_lookup(JSONLessThan)
+    HStoreField.register_lookup(JSONLessThanOrEqual)
 
 
 class DictionaryField(HStoreField):

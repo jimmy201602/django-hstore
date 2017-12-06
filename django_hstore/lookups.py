@@ -11,11 +11,12 @@ from django.db.models.lookups import (
     IsNull,
     Exact
 )
-from django.db.models import  Lookup, Func
+from django.db.models import  Lookup, Func, IntegerField, Transform
 
 from django_hstore.utils import get_cast_for_param, get_value_annotations
 import json
 import collections
+import django
 
 __all__ = [
     'HStoreComparisonLookupMixin',
@@ -264,3 +265,14 @@ class JSONHasAnyKeys(JSONSequencesMixin, Lookup):
         sql.append(')')
         return ''.join(sql), params
 
+class JSONLength(Transform):
+    lookup_name = 'length'
+
+    output_field = IntegerField()
+
+    if django.VERSION[:2] < (1, 9):
+        def as_sql(self, compiler, connection):
+            lhs, params = compiler.compile(self.lhs)
+            return 'JSON_LENGTH({})'.format(lhs), params
+    else:
+        function = 'JSON_LENGTH'

@@ -87,8 +87,8 @@ class UniqueTogetherDataBag(HStoreModel):
     name = models.CharField(max_length=32)
     data = hstore.DictionaryField()
 
-    class Meta:
-        unique_together = ('name', 'data')
+    #class Meta:
+        #unique_together = ('name', 'data')
 
 if django.VERSION >= (1, 6):
     class SchemaDataBag(HStoreModel):

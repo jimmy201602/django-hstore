@@ -85,7 +85,7 @@ class HStoreConfig(AppConfig):
     name = 'django_hstore'
     verbose = 'Django HStore'
 
-    def ready(self):
-        connection_created.connect(connection_handler,
-                                   weak=CONNECTION_CREATED_SIGNAL_WEAKREF,
-                                   dispatch_uid="_connection_create_handler")
+    #def ready(self):
+        #connection_created.connect(connection_handler,
+                                   #weak=CONNECTION_CREATED_SIGNAL_WEAKREF,
+                                   #dispatch_uid="_connection_create_handler")

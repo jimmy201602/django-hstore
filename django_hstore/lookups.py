@@ -11,7 +11,7 @@ from django.db.models.lookups import (
     IsNull,
     Exact
 )
-from django.db.models import  Lookup
+from django.db.models import  Lookup, Func
 
 from django_hstore.utils import get_cast_for_param, get_value_annotations
 import json

@@ -64,6 +64,12 @@ class HStoreVirtualMixin(object):
         if instance is None:
             raise AttributeError('Can only be accessed via instance')
         field = getattr(instance, self.hstore_field_name)
+        #json data convert
+        import json
+        try:
+            field = json.loads(field)
+        except Exception,e:
+            pass
         if not field:
             return self.default
         return field.get(self.name, self.default)
@@ -144,7 +150,9 @@ def create_hstore_virtual_field(field_cls, kwargs, hstore_field_name):
     # support DateTimeField
     if BaseField == models.DateTimeField and (kwargs.get('null') or kwargs.get('blank')):
         kwargs['default'] = None
-
+    
+    print 1,kwargs
+    print 2,BaseField
     # support Date and DateTime in django-rest-framework-hstore
     if BaseField == models.DateTimeField or BaseField == models.DateField:
         def value_to_string(self, obj):
@@ -153,6 +161,7 @@ def create_hstore_virtual_field(field_cls, kwargs, hstore_field_name):
                 return '' if val is None else val.isoformat()
             except AttributeError:
                 return val
+        print 'value_to_string',value_to_string
         VirtualField.value_to_string = value_to_string
 
     field = VirtualField(**kwargs)

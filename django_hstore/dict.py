@@ -7,7 +7,7 @@ from django.utils.encoding import force_text, force_str
 
 from .compat import UnicodeMixin
 from . import utils, exceptions
-
+from .encoder import JSONEncoder
 
 __all__ = [
     'HStoreDict',
@@ -96,7 +96,8 @@ class HStoreDict(UnicodeMixin, dict):
     # This method is used both for python3 and python2
     # thanks to UnicodeMixin
     def __unicode__(self):
-        return force_text(json.dumps(self))
+        #bug fix json format
+        return force_text(json.dumps(self,**{'cls': JSONEncoder,'separators': (',', ':')}))
 
     def __getstate__(self):
         return self.__dict__

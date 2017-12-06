@@ -12,7 +12,7 @@ from . import forms, utils
 from .descriptors import HStoreDescriptor, HStoreReferenceDescriptor, SerializedDictDescriptor
 from .dict import HStoreDict, HStoreReferenceDict
 from .virtual import create_hstore_virtual_field
-
+from .encoder import JSONEncoder
 
 class HStoreField(models.Field):
     """ HStore Base Field """
@@ -259,8 +259,10 @@ class ReferencesField(HStoreField):
         return value
 
     def get_prep_value(self, value):
-        return utils.serialize_references(value)
-
+        #return utils.serialize_references(value)
+        #bug need to be fixed
+        return json.dumps(value,**{'cls': JSONEncoder,'separators': (',', ':')})
+    
     def to_python(self, value):
         return value if isinstance(value, dict) else HStoreReferenceDict({})
 
@@ -273,6 +275,10 @@ class SerializedDictionaryField(HStoreField):
 
     def __init__(self, serializer=json.dumps, deserializer=json.loads, *args, **kwargs):
         self.serializer = serializer
+        self.serializerkwargs = {
+            'cls': JSONEncoder,
+            'separators': (',', ':')
+        }        
         self.deserializer = deserializer
         super(SerializedDictionaryField, self).__init__(*args, **kwargs)
 
@@ -305,7 +311,7 @@ class SerializedDictionaryField(HStoreField):
         if (value is None) or isinstance(value, datetime.date):
             return value
         else:
-            return self.serializer(value)
+            return self.serializer(value,**self.serializerkwargs)
 
     def _serialize_dict(self, value):
         if value is None:
@@ -339,7 +345,10 @@ class SerializedDictionaryField(HStoreField):
         """ Convert to query-friendly format. """
         if not isinstance(value, dict):  # Handle values from hremove
             return value
-        return self._serialize_dict(value)
+        #bug need to be fixed        
+        #return self._serialize_dict(value)
+        
+        return self._serialize_value(value)
 
     def get_prep_lookup(self, lookup_type, value):
         """ Prepares value for the database prior to be used in a lookup """

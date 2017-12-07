@@ -74,11 +74,9 @@ class HStoreVirtualMixin(object):
             return self.default
         
         #ugly bug fix patch
-        db_type =  str(instance._hstore_virtual_fields[self.name].db_type).rsplit('django_hstore.virtual.VirtualField: ')[1].rsplit('>>')[0]
-        #db_type <bound method VirtualField.db_type of <django_hstore.virtual.VirtualField: datetime>>
-        if db_type == u'date':
+        if instance._hstore_virtual_fields[self.name].__dict__['error_messages'].has_key(u'invalid_date') and not instance._hstore_virtual_fields[self.name].__dict__['error_messages'].has_key(u'invalid_datetime'):
             return parse_date(field.get(self.name, self.default))
-        elif db_type == u'datetime':
+        elif instance._hstore_virtual_fields[self.name].__dict__['error_messages'].has_key(u'invalid_datetime') and instance._hstore_virtual_fields[self.name].__dict__['error_messages'].has_key(u'invalid_date'):
             return parse_datetime(field.get(self.name, self.default))
         
         

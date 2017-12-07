@@ -154,14 +154,14 @@ if django.VERSION >= (1, 6):
                 }
             },
             {
-                'name': 'date',
+                'name': 'dates',
                 'class': 'DateField',
                 'kwargs': {
                     'blank': True
                 }
             },
             {
-                'name': 'datetime',
+                'name': 'datetimes',
                 'class': 'DateTimeField',
                 'kwargs': {
                     'blank': True,

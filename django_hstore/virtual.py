@@ -5,6 +5,7 @@ from django import VERSION as DJANGO_VERSION
 
 from .dict import HStoreDict
 
+from django.utils.dateparse import parse_date, parse_datetime
 
 __all__ = [
     'create_hstore_virtual_field',
@@ -64,7 +65,6 @@ class HStoreVirtualMixin(object):
         if instance is None:
             raise AttributeError('Can only be accessed via instance')
         field = getattr(instance, self.hstore_field_name)
-        #json data convert
         import json
         try:
             field = json.loads(field)
@@ -72,6 +72,16 @@ class HStoreVirtualMixin(object):
             pass
         if not field:
             return self.default
+        
+        #ugly bug fix patch
+        db_type =  str(instance._hstore_virtual_fields[self.name].db_type).rsplit('django_hstore.virtual.VirtualField: ')[1].rsplit('>>')[0]
+        #db_type <bound method VirtualField.db_type of <django_hstore.virtual.VirtualField: datetime>>
+        if db_type == u'date':
+            return parse_date(field.get(self.name, self.default))
+        elif db_type == u'datetime':
+            return parse_datetime(field.get(self.name, self.default))
+        
+        
         return field.get(self.name, self.default)
 
     def __set__(self, instance, value):
@@ -151,8 +161,6 @@ def create_hstore_virtual_field(field_cls, kwargs, hstore_field_name):
     if BaseField == models.DateTimeField and (kwargs.get('null') or kwargs.get('blank')):
         kwargs['default'] = None
     
-    print 1,kwargs
-    print 2,BaseField
     # support Date and DateTime in django-rest-framework-hstore
     if BaseField == models.DateTimeField or BaseField == models.DateField:
         def value_to_string(self, obj):
@@ -161,11 +169,9 @@ def create_hstore_virtual_field(field_cls, kwargs, hstore_field_name):
                 return '' if val is None else val.isoformat()
             except AttributeError:
                 return val
-        print 'value_to_string',value_to_string
         VirtualField.value_to_string = value_to_string
 
     field = VirtualField(**kwargs)
-
     if field.default == models.fields.NOT_PROVIDED:
         field.default = ''
 

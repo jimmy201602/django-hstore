@@ -254,6 +254,7 @@ class ReferencesField(HStoreField):
         return super(ReferencesField, self).formfield(**kwargs)
 
     def get_prep_lookup(self, lookup, value):
+        print value
         if isinstance(value, dict):
             return utils.serialize_references(value)
         return value

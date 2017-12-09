@@ -259,7 +259,7 @@ class ReferencesField(HStoreField):
         return value
 
     def get_prep_value(self, value):
-        return utils.serialize_references(value)
+        return json.dumps(utils.serialize_references(value))
     
     def to_python(self, value):
         return value if isinstance(value, dict) else HStoreReferenceDict({})

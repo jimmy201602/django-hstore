@@ -262,6 +262,10 @@ class ReferencesField(HStoreField):
         return json.dumps(utils.serialize_references(value))
     
     def to_python(self, value):
+        try:
+            value = json.loads(value)
+        except Exception:
+            pass
         return value if isinstance(value, dict) else HStoreReferenceDict({})
 
     def _value_to_python(self, value):

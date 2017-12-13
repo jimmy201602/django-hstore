@@ -73,18 +73,17 @@ class HStoreVirtualMixin(object):
         if not field:
             return self.default
         
-        #ugly bug fix patch
-        if instance._hstore_virtual_fields[self.name].__dict__['error_messages'].has_key(u'invalid_date') and not instance._hstore_virtual_fields[self.name].__dict__['error_messages'].has_key(u'invalid_datetime'):
+        #Date and Datetime convert
+        if u'DateField' == instance._meta.get_field(self.name).get_internal_type():
             try:
                 return parse_date(field.get(self.name, self.default))
             except Exception:
                 pass
-        elif instance._hstore_virtual_fields[self.name].__dict__['error_messages'].has_key(u'invalid_datetime') and instance._hstore_virtual_fields[self.name].__dict__['error_messages'].has_key(u'invalid_date'):
+        elif u'DateTimeField' == instance._meta.get_field(self.name).get_internal_type():
             try:
                 return parse_datetime(field.get(self.name, self.default))
             except Exception:
                 pass
-        
         
         return field.get(self.name, self.default)
 
